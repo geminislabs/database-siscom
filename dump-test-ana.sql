@@ -25,14 +25,11 @@ SET row_security = off;
 -- Name: test-ana; Type: DATABASE; Schema: -; Owner: test
 --
 
-CREATE DATABASE "test-ana" WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'es_MX.UTF-8';
-
-
-ALTER DATABASE "test-ana" OWNER TO test;
+-- Database siscom-test already exists, created by docker-compose
 
 \unrestrict Ypb1UDYxNrWRN2am94IikJNfuH10iiOfYvHru2H2UinkeHfUx7DCFLXp81EoCNV
 \encoding SQL_ASCII
-\connect -reuse-previous=on "dbname='test-ana'"
+\connect -reuse-previous=on "dbname='siscom-test'"
 \restrict Ypb1UDYxNrWRN2am94IikJNfuH10iiOfYvHru2H2UinkeHfUx7DCFLXp81EoCNV
 
 SET statement_timeout = 0;
@@ -78,7 +75,7 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_poi_state_timestamp() OWNER TO test;
+ALTER FUNCTION public.update_poi_state_timestamp() OWNER TO pgadmin;
 
 SET default_tablespace = '';
 
@@ -98,7 +95,7 @@ CREATE TABLE IF NOT EXISTS public.clients (
 );
 
 
-ALTER TABLE public.clients OWNER TO test;
+ALTER TABLE public.clients OWNER TO pgadmin;
 
 --
 -- TOC entry 229 (class 1259 OID 32851)
@@ -147,7 +144,7 @@ CREATE TABLE IF NOT EXISTS public.communications_current_state (
 );
 
 
-ALTER TABLE public.communications_current_state OWNER TO test;
+ALTER TABLE public.communications_current_state OWNER TO pgadmin;
 
 --
 -- TOC entry 228 (class 1259 OID 24766)
@@ -197,7 +194,7 @@ CREATE TABLE IF NOT EXISTS public.communications_suntech (
 );
 
 
-ALTER TABLE IF NOT EXISTS public.communications_suntech OWNER TO test;
+ALTER TABLE public.communications_suntech OWNER TO pgadmin;
 
 --
 -- TOC entry 227 (class 1259 OID 24765)
@@ -212,7 +209,7 @@ CREATE SEQUENCE public.communications_suntech_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.communications_suntech_id_seq OWNER TO test;
+ALTER TABLE public.communications_suntech_id_seq OWNER TO pgadmin;
 
 --
 -- TOC entry 3689 (class 0 OID 0)
@@ -228,7 +225,7 @@ ALTER SEQUENCE public.communications_suntech_id_seq OWNED BY public.communicatio
 -- Name: devices; Type: TABLE; Schema: public; Owner: test
 --
 
-CREATE IF NOT EXISTS TABLE public.devices (
+CREATE TABLE IF NOT EXISTS public.devices (
     device_id character varying(100) NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     firmware character varying(50),
@@ -236,14 +233,14 @@ CREATE IF NOT EXISTS TABLE public.devices (
 );
 
 
-ALTER TABLE public.devices OWNER TO test;
+ALTER TABLE public.devices OWNER TO pgadmin;
 
 --
 -- TOC entry 222 (class 1259 OID 24657)
 -- Name: geofence_states; Type: TABLE; Schema: public; Owner: test
 --
 
-CREATE IF NOT EXISTS TABLE public.geofence_states (
+CREATE TABLE IF NOT EXISTS public.geofence_states (
     id integer NOT NULL,
     device_id character varying(100) NOT NULL,
     geofence_id character varying(100) NOT NULL,
@@ -252,7 +249,7 @@ CREATE IF NOT EXISTS TABLE public.geofence_states (
 );
 
 
-ALTER TABLE public.geofence_states OWNER TO test;
+ALTER TABLE public.geofence_states OWNER TO pgadmin;
 
 --
 -- TOC entry 221 (class 1259 OID 24656)
@@ -268,7 +265,7 @@ CREATE SEQUENCE public.geofence_states_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.geofence_states_id_seq OWNER TO test;
+ALTER TABLE public.geofence_states_id_seq OWNER TO pgadmin;
 
 --
 -- TOC entry 3690 (class 0 OID 0)
@@ -301,7 +298,7 @@ CREATE TABLE IF NOT EXISTS public.geofences (
 );
 
 
-ALTER TABLE public.geofences OWNER TO test;
+ALTER TABLE public.geofences OWNER TO pgadmin;
 
 --
 -- TOC entry 217 (class 1259 OID 24623)
@@ -317,7 +314,7 @@ CREATE SEQUENCE public.geofences_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.geofences_id_seq OWNER TO test;
+ALTER TABLE public.geofences_id_seq OWNER TO pgadmin;
 
 --
 -- TOC entry 3691 (class 0 OID 0)
@@ -345,7 +342,7 @@ CREATE TABLE IF NOT EXISTS public.invitations (
 );
 
 
-ALTER TABLE public.invitations OWNER TO test;
+ALTER TABLE public.invitations OWNER TO pgadmin;
 
 --
 -- TOC entry 224 (class 1259 OID 24683)
@@ -365,7 +362,7 @@ CREATE TABLE IF NOT EXISTS public.notifications (
 );
 
 
-ALTER TABLE public.notifications OWNER TO test;
+ALTER TABLE public.notifications OWNER TO pgadmin;
 
 --
 -- TOC entry 223 (class 1259 OID 24682)
@@ -380,7 +377,7 @@ CREATE SEQUENCE public.notifications_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.notifications_id_seq OWNER TO test;
+ALTER TABLE public.notifications_id_seq OWNER TO pgadmin;
 
 --
 -- TOC entry 3692 (class 0 OID 0)
@@ -405,7 +402,7 @@ CREATE TABLE IF NOT EXISTS public.poi_states (
 );
 
 
-ALTER TABLE public.poi_states OWNER TO test;
+ALTER TABLE public.poi_states OWNER TO pgadmin;
 
 --
 -- TOC entry 219 (class 1259 OID 24644)
@@ -421,7 +418,7 @@ CREATE SEQUENCE public.poi_states_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.poi_states_id_seq OWNER TO test;
+ALTER TABLE public.poi_states_id_seq OWNER TO pgadmin;
 
 --
 -- TOC entry 3693 (class 0 OID 0)
@@ -453,7 +450,7 @@ CREATE TABLE IF NOT EXISTS public.pois (
 );
 
 
-ALTER TABLE public.pois OWNER TO test;
+ALTER TABLE public.pois OWNER TO pgadmin;
 
 --
 -- TOC entry 215 (class 1259 OID 24604)
@@ -469,7 +466,7 @@ CREATE SEQUENCE public.pois_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.pois_id_seq OWNER TO test;
+ALTER TABLE public.pois_id_seq OWNER TO pgadmin;
 
 --
 -- TOC entry 3694 (class 0 OID 0)
@@ -494,7 +491,7 @@ CREATE TABLE IF NOT EXISTS public.units (
 );
 
 
-ALTER TABLE public.units OWNER TO test;
+ALTER TABLE public.units OWNER TO pgadmin;
 
 --
 -- TOC entry 225 (class 1259 OID 24714)
@@ -513,21 +510,21 @@ CREATE VIEW public.unread_notifications AS
   ORDER BY notifications.created_at DESC;
 
 
-ALTER TABLE public.unread_notifications OWNER TO test;
+ALTER TABLE public.unread_notifications OWNER TO pgadmin;
 
 --
 -- TOC entry 213 (class 1259 OID 16427)
 -- Name: user_units; Type: TABLE; Schema: public; Owner: test
 --
 
-CREATE TABLE IF NOT EXISTSpublic.user_units (
+CREATE TABLE IF NOT EXISTS public.user_units (
     user_id uuid NOT NULL,
     unit_id uuid NOT NULL,
     can_edit boolean DEFAULT false
 );
 
 
-ALTER TABLE public.user_units OWNER TO test;
+ALTER TABLE public.user_units OWNER TO pgadmin;
 
 --
 -- TOC entry 211 (class 1259 OID 16396)
@@ -545,7 +542,7 @@ CREATE TABLE IF NOT EXISTS public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO test;
+ALTER TABLE public.users OWNER TO pgadmin;
 
 --
 -- TOC entry 3438 (class 2604 OID 24769)

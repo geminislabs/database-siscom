@@ -1033,3 +1033,117 @@ CREATE INDEX idx_device_events_event_type ON public.device_events USING btree (e
 
 
 ALTER TYPE public.event_type_enum OWNER TO pgadmin;
+
+
+
+CREATE TABLE public.alert_rules (
+    id              uuid DEFAULT gen_random_uuid() NOT NULL,
+
+    organization_id uuid NOT NULL,
+    created_by      uuid NOT NULL,
+
+    name            text NOT NULL,
+
+    type            text NOT NULL, -- 'ignition' | 'geofence'
+
+    config          jsonb NOT NULL,
+
+    is_active       boolean DEFAULT true NOT NULL,
+
+    created_at      timestamptz DEFAULT now() NOT NULL,
+    updated_at      timestamptz DEFAULT now() NOT NULL,
+
+    CONSTRAINT alert_rules_pkey PRIMARY KEY (id),
+
+    CONSTRAINT fk_alert_rules_org
+        FOREIGN KEY (organization_id)
+        REFERENCES public.organizations(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_alert_rules_user
+        FOREIGN KEY (created_by)
+        REFERENCES public.users(id)
+        ON DELETE SET NULL
+);
+
+
+CREATE TABLE public.alert_rule_units (
+    id          uuid DEFAULT gen_random_uuid() NOT NULL,
+
+    rule_id     uuid NOT NULL,
+    unit_id     uuid NOT NULL,
+
+    created_at  timestamptz DEFAULT now() NOT NULL,
+
+    CONSTRAINT alert_rule_units_pkey PRIMARY KEY (id),
+
+    CONSTRAINT fk_rule_units_rule
+        FOREIGN KEY (rule_id)
+        REFERENCES public.alert_rules(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_rule_units_unit
+        FOREIGN KEY (unit_id)
+        REFERENCES public.units(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT uq_rule_unit UNIQUE (rule_id, unit_id)
+);
+
+CREATE TABLE public.alerts (
+    id              uuid DEFAULT gen_random_uuid() NOT NULL,
+
+    organization_id uuid NOT NULL,
+
+    rule_id         uuid NULL,
+    unit_id         uuid NOT NULL,
+
+    event_id        uuid NULL, -- referencia a public.events
+
+    type            text NOT NULL,
+
+    payload         jsonb,
+
+    occurred_at     timestamptz NOT NULL,
+    created_at      timestamptz DEFAULT now() NOT NULL,
+
+    CONSTRAINT alerts_pkey PRIMARY KEY (id),
+
+    CONSTRAINT fk_alerts_org
+        FOREIGN KEY (organization_id)
+        REFERENCES public.organizations(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_alerts_rule
+        FOREIGN KEY (rule_id)
+        REFERENCES public.alert_rules(id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_alerts_unit
+        FOREIGN KEY (unit_id)
+        REFERENCES public.units(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_alerts_event
+        FOREIGN KEY (event_id)
+        REFERENCES public.events(id)
+        ON DELETE SET NULL
+);
+
+-- reglas activas por org
+CREATE INDEX idx_alert_rules_org_active
+ON public.alert_rules (organization_id, is_active);
+
+-- lookup rápido por unidad
+CREATE INDEX idx_rule_units_unit
+ON public.alert_rule_units (unit_id);
+
+-- consultas de alertas
+CREATE INDEX idx_alerts_org_unit_time
+ON public.alerts (organization_id, unit_id, occurred_at DESC);
+
+CREATE INDEX idx_alerts_org_time
+ON public.alerts (organization_id, occurred_at DESC);
+
+CREATE INDEX idx_org_account 
+ON organizations(account_id);

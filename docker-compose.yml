@@ -1,33 +1,46 @@
 services:
   postgres:
-    image: postgres:15
     container_name: postgres
+    image: timescale/timescaledb:2.15.1-pg15
+    restart: unless-stopped
     environment:
-      - POSTGRES_USER=pgadmin
-      - POSTGRES_PASSWORD=pgadmin123
-      - POSTGRES_DB=siscom-test
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./ddl.sql:/docker-entrypoint-initdb.d/01-ddl.sql:ro
-      - ./init.sql:/docker-entrypoint-initdb.d/02-init.sql:ro
-      - ./dump-siscom.sql:/docker-entrypoint-initdb.d/03-dump.sql:ro
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     ports:
-      - "15432:5432"
+      - "5432:5432"
+    volumes:
+      # 🔥 Tu volumen ya existente, NO CAMBIAR
+      - tmp_postgres_data:/var/lib/postgresql/data
+
+      # Si tienes scripts de inicialización, déjalos aquí
+      # - ./initdb:/docker-entrypoint-initdb.d
     networks:
       - siscom-network
-    restart: unless-stopped
-
-  postgrest:
-    image: postgrest/postgrest:latest
-    container_name: postgrest
-    environment:
-      PGRST_DB_URI: postgres://siscom:siscom@postgres:5432/siscom-test
-      PGRST_DB_ANON_ROLE: web_anon
-      PGRST_JWT_SECRET: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTYiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJyb2xlIjoidGVzdGVyIiwiaWF0IjoxNzM3OTc3NjAwLCJleHAiOjQ3OTM2NDk2MDB9.uT8nA-pUYCikcWiybkBpcnJjsMTY0v2JGxVNZB6ZFKU"
+  postgres-backup:
+    build:
+      context: ./postgres-backup
+    container_name: postgres-backup
     depends_on:
       - postgres
-    ports:
-      - "4000:3000"
+    environment:
+      TZ: America/Mexico_City
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: siscom-test
+      POSTGRES_USER: backup_user
+      PGPASSWORD: uzHA6DeW12eFsbaDbDDgqiCtIf9bAik2h4I32nOb5XT
+      S3_BUCKET: siscom-postgres-backups-prod
+      S3_PREFIX: postgres
+      AWS_REGION: us-east-1
+    volumes:
+      - ./backups:/backups
+    entrypoint: >
+      bash -c "
+        echo '0 4,16 * * * /app/backup.sh >> /proc/1/fd/1 2>> /proc/1/fd/2' > /etc/cron.d/postgres-backup &&
+        chmod 0644 /etc/cron.d/postgres-backup &&
+        crontab /etc/cron.d/postgres-backup &&
+        cron -f
+      "
     networks:
       - siscom-network
     restart: unless-stopped
@@ -37,4 +50,5 @@ networks:
     external: true
 
 volumes:
-  postgres_data:
+  tmp_postgres_data:
+    external: true

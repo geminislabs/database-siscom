@@ -4,9 +4,9 @@ services:
     image: timescale/timescaledb:2.15.1-pg15
     restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
@@ -26,12 +26,14 @@ services:
     environment:
       TZ: America/Mexico_City
       POSTGRES_HOST: postgres
-      POSTGRES_DB: siscom-test
-      POSTGRES_USER: backup_user
-      PGPASSWORD: uzHA6DeW12eFsbaDbDDgqiCtIf9bAik2h4I32nOb5XT
-      S3_BUCKET: siscom-postgres-backups-prod
-      S3_PREFIX: postgres
-      AWS_REGION: us-east-1
+      POSTGRES_DB: ${BACKUP_DB}
+      POSTGRES_USER: ${BACKUP_USER}
+      PGPASSWORD: ${BACKUP_PASSWORD}
+      S3_BUCKET: ${S3_BUCKET}
+      S3_PREFIX: ${S3_PREFIX}
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     volumes:
       - ./backups:/backups
     entrypoint: >

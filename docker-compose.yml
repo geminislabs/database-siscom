@@ -1,7 +1,8 @@
 services:
   postgres:
     container_name: postgres
-    image: timescale/timescaledb:2.15.1-pg15
+    build:
+      context: .
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}

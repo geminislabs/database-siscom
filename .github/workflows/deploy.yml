@@ -21,7 +21,7 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         port: ${{ secrets.EC2_SSH_PORT }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        source: "docker-compose.yml,init.sql,dump-test-ana.sql,postgres-backup"
+        source: "docker-compose.yml,init.sql,dump-test-ana.sql,postgres-backup,Dockerfile"
         target: "/tmp/"
         overwrite: true
 

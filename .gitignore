@@ -1,2 +1,3 @@
 dump-siscom.sql
 .env*
+.DS_Store

@@ -316,7 +316,7 @@ CREATE TABLE public.invoices (
     CONSTRAINT inv_account_fkey  FOREIGN KEY (account_id)
         REFERENCES public.accounts(id),
     CONSTRAINT inv_org_fkey      FOREIGN KEY (organization_id)
-        REFERENCES public.clients(id),
+        REFERENCES public.organizations(id),
     CONSTRAINT inv_sub_fkey      FOREIGN KEY (subscription_id)
         REFERENCES public.subscriptions(id),
     CONSTRAINT inv_fiscal_fkey   FOREIGN KEY (fiscal_profile_id)
@@ -528,7 +528,7 @@ CREATE TABLE public.payments (
     CONSTRAINT pay_account_fkey        FOREIGN KEY (account_id)
         REFERENCES public.accounts(id),
     CONSTRAINT pay_org_fkey            FOREIGN KEY (organization_id)
-        REFERENCES public.clients(id),
+        REFERENCES public.organizations(id),
     CONSTRAINT pay_method_fkey         FOREIGN KEY (payment_method_id)
         REFERENCES public.payment_methods(id) ON DELETE SET NULL,
     CONSTRAINT pay_registered_by_fkey  FOREIGN KEY (registered_by)
@@ -575,7 +575,9 @@ CREATE TABLE public.refunds (
     CONSTRAINT ref_account_fkey   FOREIGN KEY (account_id)
         REFERENCES public.accounts(id),
     CONSTRAINT ref_auth_by_fkey   FOREIGN KEY (authorized_by)
-        REFERENCES public.users(id)
+        REFERENCES public.users(id),
+    CONSTRAINT pay_account_fkey FOREIGN KEY (account_id)
+        REFERENCES public.accounts(id)
 );
 
 CREATE INDEX idx_ref_payment ON public.refunds (payment_id);
@@ -623,7 +625,7 @@ CREATE TABLE public.trials (
     CONSTRAINT tri_sub_fkey   FOREIGN KEY (subscription_id)
         REFERENCES public.subscriptions(id),
     CONSTRAINT tri_org_fkey   FOREIGN KEY (organization_id)
-        REFERENCES public.clients(id),
+        REFERENCES public.organizations(id),
     CONSTRAINT tri_ext_fkey   FOREIGN KEY (last_extended_by)
         REFERENCES public.users(id)
 );
@@ -820,7 +822,7 @@ CREATE TABLE public.usage_events (
     CONSTRAINT ue_pkey           PRIMARY KEY (id),
     CONSTRAINT ue_idem_key       UNIQUE (idempotency_key),
     CONSTRAINT ue_org_fkey       FOREIGN KEY (organization_id)
-        REFERENCES public.clients(id),
+        REFERENCES public.organizations(id),
     CONSTRAINT ue_sub_fkey       FOREIGN KEY (subscription_id)
         REFERENCES public.subscriptions(id)
 );
@@ -864,7 +866,7 @@ CREATE TABLE public.billing_notifications (
     CONSTRAINT bn_account_fkey FOREIGN KEY (account_id)
         REFERENCES public.accounts(id),
     CONSTRAINT bn_org_fkey   FOREIGN KEY (organization_id)
-        REFERENCES public.clients(id),
+        REFERENCES public.organizations(id),
     CONSTRAINT bn_invoice_fkey FOREIGN KEY (invoice_id)
         REFERENCES public.invoices(id),
     CONSTRAINT bn_payment_fkey FOREIGN KEY (payment_id)

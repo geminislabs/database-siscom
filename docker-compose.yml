@@ -37,14 +37,15 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     volumes:
       - ./backups:/backups
-    entrypoint: >
-      bash -c "
+    entrypoint:
+      - bash
+      - -c
+      - |
         echo '0 4,16 * * * /app/backup.sh >> /proc/1/fd/1 2>> /proc/1/fd/2' > /etc/cron.d/postgres-backup &&
         chmod 0644 /etc/cron.d/postgres-backup &&
         crontab /etc/cron.d/postgres-backup &&
         echo '*/10 * * * * psql -h postgres -U $POSTGRES_USER -d $POSTGRES_DB -c "SELECT partman.run_maintenance();" >> /proc/1/fd/1 2>> /proc/1/fd/2' >> /etc/cron.d/postgres-backup &&
         cron -f
-      "
     networks:
       - siscom-network
     restart: unless-stopped

@@ -174,6 +174,45 @@ BEGIN
 END
 $$;
 
+
+BEGIN;
+
+CREATE TABLE IF NOT EXISTS public.telemetry_intelligence_hourly_stats (
+    device_id text NOT NULL,
+    bucket timestamptz NOT NULL,
+
+    samples integer NOT NULL DEFAULT 0,
+
+    sum_speed double precision NOT NULL DEFAULT 0,
+    count_speed integer NOT NULL DEFAULT 0,
+
+    distance_km double precision NOT NULL DEFAULT 0,
+
+    last_lat double precision NULL,
+    last_lng double precision NULL,
+
+    created_at timestamptz NOT NULL DEFAULT now(),
+    updated_at timestamptz NOT NULL DEFAULT now(),
+
+    CONSTRAINT telemetry_intelligence_hourly_stats_pkey
+        PRIMARY KEY (device_id, bucket)
+);
+
+-- convertir a hypertable
+SELECT create_hypertable(
+    'public.telemetry_intelligence_hourly_stats',
+    'bucket',
+    if_not_exists => TRUE
+);
+
+CREATE INDEX IF NOT EXISTS idx_telemetry_intelligence_device_time
+ON public.telemetry_intelligence_hourly_stats(device_id, bucket DESC);
+
+CREATE INDEX IF NOT EXISTS idx_telemetry_intelligence_bucket
+ON public.telemetry_intelligence_hourly_stats(bucket DESC);
+
+COMMIT;
+
 INSERT INTO public.device_profile (
     device_id,
     ignition_source,

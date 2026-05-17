@@ -229,3 +229,6 @@ SELECT
 FROM public.devices d
 ON CONFLICT (device_id) DO NOTHING;
 
+CREATE INDEX IF NOT EXISTS idx_unit_devices_active_lookup
+ON public.unit_devices(device_id)
+WHERE unassigned_at IS NULL;
